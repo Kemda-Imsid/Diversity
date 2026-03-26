@@ -27,16 +27,6 @@ This repository provides two R functions for analyzing likert and demographic da
 ---
 ### Example Usage
 
-```r
-# Run cross-tabulation
-result <- create_demo_gender_tab(demo_vars, minority_group, gender_category)
-
-# View tabyl table
-result$tabyl_table
-
-# View Fisher's test p-value
-result$fisher_test$p.value
-
 ## 2. single_likert
 
 `single_likert` is an R function to **plot single or multiple Likert survey items**. It can optionally facet by a demographic variable and display responses as **number stacked bars**.
@@ -65,6 +55,18 @@ result$fisher_test$p.value
 ## Installation
 
 Make sure you have the required packages installed:
+
+```r
+# Run cross-tabulation
+result <- create_demo_gender_tab(demo_vars, minority_group, gender_category)
+
+# View tabyl table
+result$tabyl_table
+
+# View Fisher's test p-value
+result$fisher_test$p.value
+
+
 
 ```r
 install.packages(c("dplyr", "janitor"))

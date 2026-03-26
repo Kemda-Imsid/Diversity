@@ -18,6 +18,19 @@
 - Performs **Fisher's exact test** on the two categorical variables.
 
 ---
+# Using a sample dataset
+result <- create_demo_gender_tab(demo_vars, minority_group, gender_category)
+
+# Print the tabyl table
+print(result$tabyl_table)
+
+# Print Fisher's test p-value
+print(result$fisher_test$p.value)
+
+
+## Write a R function to plot likert item
+
+
 
 ## Installation
 

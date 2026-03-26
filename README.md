@@ -1,5 +1,5 @@
 # Diversity
-# create_demo_gender_tab
+## Write a R function for descriptive analysis of demographics item
 
 `create_demo_gender_tab` is an R function that creates a **cross-tabulation table** for two categorical variables (e.g., minority status and gender) and performs **Fisher’s exact test** to check for association. It leverages the `janitor` and `dplyr` packages.
 

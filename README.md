@@ -1,7 +1,14 @@
 # Diversity
-## Write a R function for descriptive analysis of demographics item
+### Survey Analysis Toolkit
 
-`create_demo_gender_tab` is an R function that creates a **cross-tabulation table** for two categorical variables (e.g., minority status and gender) and performs **Fisher’s exact test** to check for association. It leverages the `janitor` and `dplyr` packages.
+This repository provides two R functions for analyzing likert and demographic data:
+
+1. `create_demo_gender_tab`: Create cross-tabulations and perform Fisher's exact test.  
+2. `single_likert`: Plot single or multiple Likert survey items with optional demographic faceting.
+
+## 1. create_demo_gender_tab
+
+`create_demo_gender_tab` creates a **cross-tabulation table** for two categorical variables (e.g., minority status and gender) and performs **Fisher’s exact test**.
 
 ---
 
@@ -18,19 +25,42 @@
 - Performs **Fisher's exact test** on the two categorical variables.
 
 ---
-# Using a sample dataset
+### Example Usage
+
+```r
+# Run cross-tabulation
 result <- create_demo_gender_tab(demo_vars, minority_group, gender_category)
 
-# Print the tabyl table
-print(result$tabyl_table)
+# View tabyl table
+result$tabyl_table
 
-# Print Fisher's test p-value
-print(result$fisher_test$p.value)
+# View Fisher's test p-value
+result$fisher_test$p.value
 
+## 2. single_likert
 
-## Write a R function to plot likert item
+`single_likert` is an R function to **plot single or multiple Likert survey items**. It can optionally facet by a demographic variable and display responses as **number stacked bars**.
 
+### Features
 
+- Works with **single or multiple Likert columns**.  
+- Optional **demographic grouping** for divergent plots.  
+- Custom **Likert levels** to control response order.  
+- Custom **item order** for multiple items.  
+- Flexible **y-axis limits** (`Limit`) and **axis label** (`Lab`).  
+- Flipped coordinates for better readability.  
+
+### Parameters
+
+| Parameter       | Description |
+|-----------------|-------------|
+| `data`          | Data frame containing the Likert responses. |
+| `likert_cols`   | Vector of column names (strings) containing Likert items. |
+| `demo`          | demographic column name (string) for faceting. |
+| `likert_levels` | vector of Likert levels (e.g., `"Strongly Disagree"` to `"Strongly Agree"`). |
+| `list_order`    | order of demo items . |
+| `Limit`         | Y-axis limits as a percentage range (default `c(0,100)`). |
+| `Lab`           | Optional label for the y-axis. |
 
 ## Installation
 

@@ -295,7 +295,9 @@ likert_levels <- c("Never","Rarely","Sometimes","Often")
 single_likert<-function(data,likert_cols,demo,likert_levels,list_order,Limit,Lab){
 
   data <- data[, c(likert_cols, demo)]
-
+  #remove NAś
+  
+  data<-data[complete.cases(data),]
   data <- data %>%
     group_by(across(all_of(c(likert_cols, demo)))) %>%
     summarise(count = n(), .groups = "drop") %>%
@@ -423,7 +425,7 @@ cowplot::plot_grid(plot_grid(
     axis.title.y = element_text(margin = margin(r = 3,)),
    # axis.text.y = element_text(margin = margin(r = 4)),
     plot.title = element_blank(),
-    plot.margin  = margin(0, 0, 0, 0),
+    plot.margin  = margin(2, 2, 2, 2),
     legend.position = "none"),
   ncol = 1,
   align = "v",  

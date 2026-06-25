@@ -220,15 +220,20 @@ raw <- raw %>%
   mutate(employment_sector = sprintf("%-12s", employment_sector),
          employment_sector = factor(employment_sector))
 
+## Experienced discrimination 
+raw <- raw%>%
+  mutate(
+    Experienced_Discrimination = case_when(
+      `Experienced unconscious bias or discrimination in  professional field`  == "Never"  ~ "NO",
+      `Experienced unconscious bias or discrimination in  professional field` %in%c("Often","Rarely", "Sometimes") ~ "Yes",
+      TRUE ~ "Yes"))
 
 
-# Descriptive
+# Descriptive for Experienced_Discrimination
+raw$`Experienced unconscious bias or discrimination in  professional field`
+#raw<-raw[!is.na(raw$`Experienced unconscious bias or discrimination in  professional field`),]
 #  Demographics as factors
-demo_vars<-raw[,c("Age","gender_category","minority_group","employment_sector")]
-
-
-
-
+demo_vars<-raw[,c("Age","gender_category","minority_group","employment_sector","Experienced_Discrimination")]
 
 demo_vars[] <- lapply(demo_vars, as.factor)
 demo_vars$age_class<-factor(demo_vars$Age, levels = c("    > 40    ", "   <= 40    " ))
@@ -262,11 +267,12 @@ create_demo_gender_tab <- function(data, group_var, gender_var) {
 result_Age<- create_demo_gender_tab(demo_vars, Age, gender_category)
 result_minority <- create_demo_gender_tab(demo_vars, minority_group, gender_category)
 result_Employement <- create_demo_gender_tab(demo_vars, employment_sector, gender_category)
-
+#result_gender_category <- create_demo_gender_tab(demo_vars, gender_category, gender_category)
 # Access outputs
-result_Age$tabyl_table
-result_Age$contingency_table
-result_Age$fisher_test
+result_Employement$tabyl_table
+result_Employement$contingency_table
+result_Employement$fisher_test
+
 
 #Likerts analysis ... We focused on Experienced unconscious bias or discrimination in  professional field
 
@@ -295,8 +301,7 @@ likert_levels <- c("Never","Rarely","Sometimes","Often")
 single_likert<-function(data,likert_cols,demo,likert_levels,list_order,Limit,Lab){
 
   data <- data[, c(likert_cols, demo)]
-  #remove NAś
-  
+  ##remove NA
   data<-data[complete.cases(data),]
   data <- data %>%
     group_by(across(all_of(c(likert_cols, demo)))) %>%
@@ -383,7 +388,7 @@ p_age<-single_likert(likert_vars_clean,"Experienced unconscious bias or discrimi
 p_minority<-single_likert(likert_vars_clean,"Experienced unconscious bias or discrimination in  professional field","minority_group",likert_levels,list_order=NULL,
                              Limit=c("","No",  "Yes" ),Lab="Minority")
 p_employement<-single_likert(likert_vars_clean,"Experienced unconscious bias or discrimination in  professional field","employment_sector",likert_levels,list_order=NULL,
-                             Limit=c("Academia","Industry", "Other/None"),Lab="Sector")
+                             Limit=c("Academia","Industry", "Other/None"),Lab="Employment")
 
 legend <- cowplot::get_legend(p_age) 
 
@@ -391,50 +396,94 @@ legend <- cowplot::get_legend(p_age)
 
 png(filename = "likert_Diversity_2sided_neutŕal_No Answer_removed.png", width = 160, height =110,units = "mm", res=300)
 
-cowplot::plot_grid(plot_grid(
-  p_gender+theme( 
-    axis.title.x = element_blank(),
-    plot.title = element_blank(),
-    axis.text.y = element_text(margin = margin(r = 45)),
-    axis.text.x = element_text(color = "transparent"),
-    plot.margin  = margin(15, 0, -15, 0),
-    axis.ticks.x=element_blank(),
-    axis.line = element_blank(),
-    legend.position = "none"), 
-  p_age+theme(
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(color = "transparent")  ,
-    plot.title = element_blank(),
-    axis.title.y = element_text(margin = margin(r = 28)),
-    plot.margin  = margin(15, 0, -15, 0),
-    axis.ticks.x=element_blank(),
-    axis.line = element_blank(),
-    legend.position = "none"), 
-  p_minority+theme( 
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(color = "transparent")  ,
-    plot.title = element_blank(),
-    axis.title.y = element_text(margin = margin(r = 35,b=20)),
-    plot.margin  = margin(15, 0, -15, 0),
-    axis.ticks.x=element_blank(),
-    axis.line = element_blank(),
-    legend.position = "none"), 
-  
-  p_employement+theme( 
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(margin = margin(r = 3,)),
-   # axis.text.y = element_text(margin = margin(r = 4)),
-    plot.title = element_blank(),
-    plot.margin  = margin(2, 2, 2, 2),
-    legend.position = "none"),
+
+
+p_gender <- p_gender + theme(
+  axis.title.x = element_blank(),
+  axis.text.x = element_text(color = "transparent"),
+  axis.line.x = element_blank(),
+  axis.ticks.x = element_blank(),
+  panel.border = element_blank(),
+  panel.background = element_blank(),
+  plot.background = element_blank(),
+  plot.title = element_blank(),
+  legend.position = "none",
+  plot.margin = margin(10, 0, -10, 0)
+)
+p_age <- p_age +theme(
+  axis.title.x = element_blank(),
+  axis.text.x = element_text(color = "transparent"),
+  axis.line.x = element_blank(),
+  axis.ticks.x  = element_blank(),
+  panel.border = element_blank(),
+  panel.background = element_blank(),
+  plot.background = element_blank(),
+  plot.title = element_blank(),
+  legend.position = "none",
+  plot.margin = margin(10, 0, -10, 0)
+)
+p_minority <- p_minority + theme(
+  axis.title.x = element_blank(),
+  axis.text.x = element_text(color = "transparent"),
+  axis.line.x = element_blank(),
+  axis.ticks.x  = element_blank(),
+  panel.border = element_blank(),
+  panel.background = element_blank(),
+  plot.background = element_blank(),
+  plot.title = element_blank(),
+  legend.position = "none",
+  plot.margin = margin(-10, 0, 10, 0)
+)
+p_employement <- p_employement + theme(
+  axis.title.x = element_blank(),
+  #axis.text.x = element_text(color = "transparent"),
+  #axis.line.x = element_blank(),
+  panel.border = element_blank(),
+  panel.background = element_blank(),
+  plot.background = element_blank(),
+  plot.title = element_blank(),
+  legend.position = "none",
+  plot.margin = margin(-30, 0, 30, 0)
+)
+
+plots <- plot_grid(
+  p_gender,
+  p_age,
+  p_minority,
+  p_employement,
   ncol = 1,
-  align = "v",  
-  axis = "lr" ,  
-  legend
-)+
-  draw_label("Experienced bias or discrimination in professional field ", x = 0.5, y = 1, vjust = 1.3, size = 14, fontface = "bold") +
-  draw_label("Number of participants", x=0.5, y= 0.17, size = 10, angle= 0))
+  align = "v",
+  axis = "lr"
+)
+
+final_plot <- ggdraw() +
+  draw_label(
+    "Experienced bias or discrimination in professional field",
+    x = 0.5, y = 0.98,
+    vjust = 1,
+    size = 14,
+    fontface = "bold"
+  ) +
+  draw_plot(
+    cowplot::plot_grid(
+      plots,
+      legend,
+      ncol = 1,
+      rel_heights = c(1, 0.02)
+    ),
+    x = 0, y = 0.01, width = 1, height = 1
+  ) +
+  draw_label(
+    "Number of participants",
+    x = 0.5, y = 0.1,
+    size = 10
+  )
+
+png(filename = "likert_Diversity_2sided_neutŕal_No Answer_removed.png", width = 160, height =110,units = "mm", res=300)
+
+final_plot
 dev.off()
+
 
 
 ## Display the statistics fo the likert
